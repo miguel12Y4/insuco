@@ -10,6 +10,7 @@ const addDataToFormulaio = async (tipo) =>{
 
     const data = await peticion(tipo);
     data.data.forEach((element, index) => {
+        console.log(element)
         const option = document.createElement('option');
         option.value = element;
         option.text = data.vista[index];
@@ -97,25 +98,25 @@ const guardarProdcutos = () => {
     //obtener data de los select
     let selectEspecie = document.getElementById("selectEspecie");
     //data para insertar a la tabla
-    let dataTableEspecie = (selectEspecie.options[selectEspecie.selectedIndex].text == "Especie" ? "" : selectEspecie.options[selectEspecie.selectedIndex].text);
+    let dataTableEspecie = (selectEspecie.options[selectEspecie.selectedIndex].value == "1" ? "" : selectEspecie.options[selectEspecie.selectedIndex].text);
     
     let dataEspecie = selectEspecie.value;
 
     let selectRubro = document.getElementById("selectRubro");
     //data para insertar a la tabla
-    let dataTableRubro = (selectRubro.options[selectRubro.selectedIndex].text == "Rubro" ? "" :  selectRubro.options[selectRubro.selectedIndex].text);
+    let dataTableRubro = (selectRubro.options[selectRubro.selectedIndex].value == "1" ? "" :  selectRubro.options[selectRubro.selectedIndex].text);
     //data para insertar en clase ui
     let dataRubro = selectRubro.value;
 
     let selectUbicacion = document.getElementById("selectUbicacion");
     //data para insertar a la tabla
-    let dataTableUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].text == "Ubicacion" ? "" : selectUbicacion.options[selectUbicacion.selectedIndex].text);
+    let dataTableUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].value == "1" ? "" : selectUbicacion.options[selectUbicacion.selectedIndex].text);
     //data para insertar en clase ui
     let dataUbicacion = selectUbicacion.value;
 
     let selectPersona = document.getElementById("selectPersona");
     //data para insertar a la tabla
-    let dataTablePersona = (selectPersona.options[selectPersona.selectedIndex].text == "Encargado" ? "" : selectPersona.options[selectPersona.selectedIndex].text);
+    let dataTablePersona = (selectPersona.options[selectPersona.selectedIndex].value == "-" ? "" : selectPersona.options[selectPersona.selectedIndex].text);
     //data para insertar en clase ui
     let dataPersona = selectPersona.value;
 
@@ -148,6 +149,7 @@ const guardarProdcutos = () => {
 
     cell = newRow.insertCell(7);
     cell.textContent = observacion;
+
 
 
     let index = ui.agregarProducto(new producto(false, descripcion, precio, cantidad, observacion, dataEspecie, dataRubro, dataUbicacion, dataPersona));

@@ -19,13 +19,11 @@ router.post('/addProduct', (req, res) => {
 
     productos.forEach(element => {
         for (let i = 0; i < element.cantidad; i++) {
-
-
             if (!element.nul) productosIndividuales.push(
                 [
                     element.descripcion,
                     element.precio,
-                    element.observacion,
+                    element.observacion ,
                     element.especie,
                     element.rubro,
                     element.ubicacion,
@@ -66,7 +64,6 @@ router.post('/addEspecie', (req, res) => {
     const data = req.body;
     pool.query('INSERT INTO ESPECIE(NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
         if (error) throw error;
-        console.log(results);
         res.send('Especie agregada');
     });
 });

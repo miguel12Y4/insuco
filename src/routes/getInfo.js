@@ -50,6 +50,10 @@ router.get('/getEspecie', (req, res)=>{
     });
 });
 
+router.get('/search', (req, res)=>{
+    res.render('search', {title : "Buscar Productos"});
+});
+
 
 
 module.exports = router;
