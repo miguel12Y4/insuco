@@ -6,7 +6,7 @@ const app = express();
 
 
 //configuración
-app.set('port', 2002);
+app.set('port', 5001);
 app.set('views', path.join(__dirname, 'views'));
 //app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
@@ -17,6 +17,8 @@ app.use(express.json());
 
 //routes
 app.use(require('./routes/index'));
+app.use(require('./routes/addData'));
+app.use(require('./routes/getInfo'));
 
 //archivos estaticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -25,3 +27,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.listen(app.get('port'), ()=>{
     console.log('servidor en puerto ' +app.get('port'));
 });
+
+

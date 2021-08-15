@@ -1,3 +1,36 @@
+const llenarFormulario = ()=>{
+
+    addDataToFormulaio('Ubicacion');
+    addDataToFormulaio('Persona');
+    addDataToFormulaio('Rubro');
+    addDataToFormulaio('Especie');
+}
+const addDataToFormulaio = async (tipo) =>{
+    const select = document.getElementById("select"+tipo);
+
+    const data = await peticion(tipo);
+    data.data.forEach((element, index) => {
+        const option = document.createElement('option');
+        option.value = element;
+        option.text = data.vista[index];
+        select.appendChild(option);
+    })
+    
+};
+
+const peticion = async (tipo) =>{
+    const url = '/get'+tipo;
+    const res = await fetch(url);
+    const result = await res.json();
+    return result;
+};  
+
+llenarFormulario();
+
+
+
+
+
 class producto {
     constructor(nul = false, descripcion, precio, cantidad, observacion, especie, rubro, ubicacion, encargado) {
         this.nul = nul;
@@ -48,34 +81,48 @@ function deleteRow(path, index) {
 
 //obtiene los datos del formulario, los agrega a la tabla y los agrega al array de productos de ui
 const guardarProdcutos = () => {
-
+    
     //obtener y  validad información de formulario
     let descripcion = document.getElementById("descripcion").value;
     let precio = document.getElementById("precio").value;
     let observacion = document.getElementById("observacion").value;
     let cantidad = document.getElementById("cantidad").value;
-
-    let selectEspecie = document.getElementById("selectEspecie").value;
-    selectEspecie = (selectEspecie == "Especie" ? "-" : selectEspecie);
-
-    let selectRubro = document.getElementById("selectRubro").value;
-    selectRubro = (selectRubro == "Rubro" ? "-" : selectRubro);
-
-    let selectUbicacion = document.getElementById("selectUbicacion").value;
-    selectUbicacion = (selectUbicacion == "Ubicacion" ? "-" : selectUbicacion);
-
-    let selectPersona = document.getElementById("selectPersona").value;
-    selectPersona = (selectPersona == "Encargado" ? "-" : selectPersona);
-
+    
     //comprobar validez de los datos
     if (descripcion === "" || precio === "" || cantidad === "") {
-        alert("Faltan datos que completar");
+        alert("Los campos Descripcion, Cantidad y Precio deben estan llenados");
         return;
     }
 
+    //obtener data de los select
+    let selectEspecie = document.getElementById("selectEspecie");
+    //data para insertar a la tabla
+    let dataTableEspecie = (selectEspecie.options[selectEspecie.selectedIndex].text == "Especie" ? "" : selectEspecie.options[selectEspecie.selectedIndex].text);
+    
+    let dataEspecie = selectEspecie.value;
+
+    let selectRubro = document.getElementById("selectRubro");
+    //data para insertar a la tabla
+    let dataTableRubro = (selectRubro.options[selectRubro.selectedIndex].text == "Rubro" ? "" :  selectRubro.options[selectRubro.selectedIndex].text);
+    //data para insertar en clase ui
+    let dataRubro = selectRubro.value;
+
+    let selectUbicacion = document.getElementById("selectUbicacion");
+    //data para insertar a la tabla
+    let dataTableUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].text == "Ubicacion" ? "" : selectUbicacion.options[selectUbicacion.selectedIndex].text);
+    //data para insertar en clase ui
+    let dataUbicacion = selectUbicacion.value;
+
+    let selectPersona = document.getElementById("selectPersona");
+    //data para insertar a la tabla
+    let dataTablePersona = (selectPersona.options[selectPersona.selectedIndex].text == "Encargado" ? "" : selectPersona.options[selectPersona.selectedIndex].text);
+    //data para insertar en clase ui
+    let dataPersona = selectPersona.value;
+
+
     //insertar datos a la tabla
-    let tabla = document.getElementById('table');
-    let newRow = tabla.insertRow(-1);
+    const tabla = document.getElementById('table');
+    const newRow = tabla.insertRow(-1);
 
     let cell = newRow.insertCell(0);
     cell.innerHTML = '<strong>' + descripcion + '</strong>';
@@ -88,25 +135,25 @@ const guardarProdcutos = () => {
 
 
     cell = newRow.insertCell(3);
-    cell.textContent = (selectEspecie);
+    cell.textContent = dataTableEspecie;
 
     cell = newRow.insertCell(4);
-    cell.textContent = selectRubro;
+    cell.textContent = dataTableRubro;
 
     cell = newRow.insertCell(5);
-    cell.textContent = selectUbicacion;
+    cell.textContent = dataTableUbicacion;
 
     cell = newRow.insertCell(6);
-    cell.textContent = selectPersona;
+    cell.textContent = dataTablePersona;
 
     cell = newRow.insertCell(7);
     cell.textContent = observacion;
 
 
-    let index = ui.agregarProducto(new producto(false, descripcion, precio, cantidad, observacion, selectEspecie, selectRubro, selectUbicacion, selectPersona));
+    let index = ui.agregarProducto(new producto(false, descripcion, precio, cantidad, observacion, dataEspecie, dataRubro, dataUbicacion, dataPersona));
 
     cell = newRow.insertCell(8);
-    cell.innerHTML = '<button class="btn btn-danger p-0">Borrar</button>'
+    cell.innerHTML = '<button class="btn btn-danger p-0"> X </button>'
     cell.addEventListener('click', (event) => {
         deleteRow(event.path, index);
     })
@@ -123,48 +170,27 @@ form.addEventListener('submit', function (event) {
 
 const button = document.getElementById("enviar");
 
-const mostrarListadoAgregado = (productos) => {
-    const app = document.getElementById('App');
-    const inicio = `
-    <div class="mx-auto p-4 row">
-        <table id="table" class="table table-responsive text-center">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Descripción</th>
-                    <th scope="col">Especie</th>
-                    <th scope="col">Rubro</th>
-                    <th scope="col">Ubicacion</th>
-                    <th scope="col">Encargado</th>
-                </tr>
-            </thead>
-            <tbody>`
+const mostrarListadoAgregado = (idsFromServer) => {
+    const table = document.getElementById('table');
+    
+    //remover formulario
+    document.getElementById('div-formulario').parentNode.removeChild(document.getElementById('div-formulario'));
+    
+    //clase para que la tabla este al centro
+    document.getElementById('div-tabla').setAttribute("class", "row col-md-12");
+    
+    const rows = table.rows;
+    rows[0].cells[8].textContent = "Ids";
 
-    let rows = "";
-    const p = productos.productos;
-    p.forEach(data => {
-        rows += `<tr>
-            <td>${data.id}</td>
-            <td>${data.descripcion}</td>
-            <td>${data.especie}</td>
-            <td>${data.rubro}</td>
-            <td>${data.ubicacion}</td>
-            <td>${data.encargado}</td>
-        </tr>`
-    });
-    const fin = `
-            </tbody>
-        </table>
-        <div class="container text-center" >
-        <form action="/" method="get">
-                <button class="btn btn-success">Inicio</button>
-            </form>
+    for (let i=1; i<rows.length; i++){
+        rows[i].cells[8].textContent = idsFromServer[i-1];
+        
+    }
 
-    </div>
-    </div>
-    `;
+    let divEnviar = document.getElementById("div-enviar");
+    
+    divEnviar.innerHTML = '<a href="/addProduct" class="btn btn-success">Volver</a>'
 
-    app.innerHTML = inicio + rows + fin;
 }
 
 
@@ -172,20 +198,19 @@ button.addEventListener('click', async () => {
     const productos = ui.getProductos();
 
     if (productos.length > 0) {
-        let url = 'http://localhost:2002/addProduct';
+        let url = '/addProduct';
         let data = { productos };
 
 
         const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(data),
-            redirect: 'follow',
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        const products = await res.json();
-        mostrarListadoAgregado(products);
+        const {ids} = await res.json();
+        mostrarListadoAgregado(ids);
 
 
 
@@ -193,7 +218,3 @@ button.addEventListener('click', async () => {
         alert("No hay productos en la tabla")
     }
 });
-
-
-
-

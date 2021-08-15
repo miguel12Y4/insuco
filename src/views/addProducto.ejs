@@ -14,55 +14,43 @@
     
     <div class="">
         <div id="App" class="row mx-2 py-4">
-            <div class="col-md-4">
+            <div class="col-md-3" id ="div-formulario">
                 <div class="card">
                     <div class="card-header">
                         <h4>Añadir producto</h4>
                     </div>
                     <form id="product-form" class="card-body">
                         <div class="form-group">
-                            <input type="text" id="descripcion" placeholder="Descripción" class="form-control" autocomplete="off">
+                            <label>Descripcion:</label>
+                            <input type="text" id="descripcion" placeholder="Descripción" class="form-control" autocomplete="off" autofocus>
                         </div>
                         <div class="form-group">
-                            <input type="number" id="precio" placeholder="Precio" class="form-control" autocomplete="off">
-                        </div>
-                        <div class="form-group">
+                            <label>Cantidad:</label>
                             <input type="number" id="cantidad" placeholder="Cantidad" class="form-control" min="1" step="1" autocomplete="off">
                         </div>
                         <div class="form-group">
+                            <label>Precio:</label>
+                            <input type="number" id="precio" placeholder="Precio" class="form-control" autocomplete="off" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Observación:</label>
                             <input type="text" id="observacion" placeholder="Observación" class="form-control" autocomplete="off">
                         </div>
                         
                         <div class="form-group">
                             <select class="form-control" id="selectEspecie">
-                                <option>Especie</option>
-                                <% especies.forEach(function(data) { %>
-                                    <option> <%= data %></option>
-                                    <% }); %> 
                                 </select>
                             </div>
                             <div class="form-group">
                                 <select class="form-control" id="selectRubro">
-                                    <option>Rubro</option>
-                                <% rubros.forEach(function(data) { %>
-                                    <option> <%= data %></option>
-                                    <% }); %> 
                                 </select>
                             </div>
                             <div class="form-group">
                                 <select class="form-control" id="selectUbicacion">
-                                    <option>Ubicacion</option>
-                                <% ubicaciones.forEach(function(data) { %>
-                                    <option> <%= data %></option>
-                                    <% }); %> 
                                 </select>
                             </div>
                             <div class="form-group">
                                 <select class="form-control" id="selectPersona">
-                                    <option>Encargado</option>
-                                <% personas.forEach(function(data) { %>
-                                    <option> <%= data %></option>
-                                    <% }); %> 
                                 </select>
                             </div>
                             
@@ -74,8 +62,8 @@
 
                     
                 </div>
-            <div class="col-md-8">
-                <table id="table" class="table table-responsive text-center">
+            <div class="row col-md-8" id= "div-tabla">
+                <table id="table" class="row d-flex justify-content-center table table-responsive text-center table-bordered">
                     <thead class="thead-dark">
                       <tr>
                         <th scope="col">Descripción</th>
@@ -93,7 +81,7 @@
 
                     </tbody>
                   </table>
-                  <div class="container text-center">
+                  <div class="container text-center" id="div-enviar">
                       <button id="enviar" class="btn btn-success">Enviar</button>
 
                   </div>
