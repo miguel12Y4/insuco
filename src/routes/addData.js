@@ -11,7 +11,7 @@ router.get('/addProduct', (req, res) => {
 
 router.post('/addProduct', (req, res) => {
     const { productos } = req.body;
-
+    console.log(productos)
 
     const productosIndividuales = [];
 
@@ -19,7 +19,7 @@ router.post('/addProduct', (req, res) => {
 
     productos.forEach(element => {
         for (let i = 0; i < element.cantidad; i++) {
-            if (!element.nul) productosIndividuales.push(
+            productosIndividuales.push(
                 [
                     element.descripcion,
                     element.precio,
@@ -27,7 +27,8 @@ router.post('/addProduct', (req, res) => {
                     element.especie,
                     element.rubro,
                     element.ubicacion,
-                    element.encargado
+                    element.encargado,
+                    element.fecha
                 ]
             );
 
@@ -36,7 +37,7 @@ router.post('/addProduct', (req, res) => {
 
     let id = [];
 
-    pool.query('INSERT INTO PRODUCTO(DESCRIPCION, PRECIO, OBSERVACION, ID_ESPECIE, ID_RUBRO, ID_UBICACION, RUT_ENCARGADO) VALUES ?', [productosIndividuales], (error, results) => {
+    pool.query('INSERT INTO PRODUCTO(DESCRIPCION, PRECIO, OBSERVACION, ID_ESPECIE, ID_RUBRO, ID_UBICACION, RUT_ENCARGADO, FECHA) VALUES ?', [productosIndividuales], (error, results) => {
         if (error) throw error;
     
         let top = results.insertId;
@@ -80,7 +81,6 @@ router.post('/addPersona', (req, res) => {
     const datos = [data.rut, data.nombre]
     pool.query('INSERT INTO ENCARGADO(RUT, NOMBRE) VALUES (?);', [datos], (error, results) => {
         if (error) throw error;
-        console.log(results);
         res.send('Persona agregada');
     });
 });
@@ -95,7 +95,6 @@ router.post('/addRubro', (req, res) => {
     const data = req.body;
     pool.query('INSERT INTO RUBRO (NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
         if (error) throw error;
-        console.log(results);
         res.send('Rubro agregado');
     });
 });
@@ -109,7 +108,6 @@ router.post('/addUbicacion', (req, res) => {
     const data = req.body;
     pool.query('INSERT INTO UBICACION(NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
         if (error) throw error;
-        console.log(results);
         res.send('Ubicacion agregada');
     });
 });

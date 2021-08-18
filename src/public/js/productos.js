@@ -3,19 +3,22 @@ const llenarFormulario = ()=>{
     addDataToFormulaio('Ubicacion');
     addDataToFormulaio('Persona');
     addDataToFormulaio('Rubro');
-    addDataToFormulaio('Especie');
+    addDataToFormulaio('Especie'); 
 }
 const addDataToFormulaio = async (tipo) =>{
     const select = document.getElementById("select"+tipo);
 
     const data = await peticion(tipo);
-    data.data.forEach((element, index) => {
-        console.log(element)
+
+    for (let i = 0; i < data.key.length; i++) {
+        const key = data.key[i];
+        const text = data.text[i];
         const option = document.createElement('option');
-        option.value = element;
-        option.text = data.vista[index];
+        option.value = key;
+        option.text = text;
+
         select.appendChild(option);
-    })
+    }
     
 };
 
@@ -26,6 +29,8 @@ const peticion = async (tipo) =>{
     return result;
 };  
 
+//busco los datos del formulario
+
 llenarFormulario();
 
 
@@ -33,8 +38,7 @@ llenarFormulario();
 
 
 class producto {
-    constructor(nul = false, descripcion, precio, cantidad, observacion, especie, rubro, ubicacion, encargado) {
-        this.nul = nul;
+    constructor(descripcion, precio, cantidad, observacion, especie, rubro, ubicacion, encargado, fecha) {
         this.descripcion = descripcion;
         this.precio = precio;
         this.cantidad = cantidad;
@@ -43,6 +47,7 @@ class producto {
         this.rubro = rubro;
         this.ubicacion = ubicacion;
         this.encargado = encargado;
+        this.fecha = fecha;
     }
 }
 
@@ -57,144 +62,123 @@ class UI {
         return this.productos.length - 1;
     }
     getProductos() {
-        let prod = []
-        this.productos.forEach(element => {
-            if (!element.nul) {
-                prod.push(element)
-            }
-        });
-        return prod;
+        return this.productos;
     }
     borrarProducto(index) {
-        this.productos[index] = new producto(true);
+        this.productos.splice( index, 1 );      
     }
 }
+
 
 const form = document.getElementById('product-form');
 var ui = new UI();
 
-//Eliminar de la tabla la fila selecionada y quitarla del registro de ui
-function deleteRow(path, index) {
-    ui.borrarProducto(index);
-    path[3].removeChild(path[2]);
-}
 
+//añadir accion al formulario, al momento de hacer click agregará una fila a la tabla
+form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    guardarProdcutos();
+    
+});
 
 //obtiene los datos del formulario, los agrega a la tabla y los agrega al array de productos de ui
 const guardarProdcutos = () => {
     
     //obtener y  validad información de formulario
-    let descripcion = document.getElementById("descripcion").value;
-    let precio = document.getElementById("precio").value;
-    let observacion = document.getElementById("observacion").value;
-    let cantidad = document.getElementById("cantidad").value;
+    const descripcion = document.getElementById("descripcion").value;
+    const precio = document.getElementById("precio").value;
+    const observacion = document.getElementById("observacion").value;
+    const cantidad = document.getElementById("cantidad").value;
     
     //comprobar validez de los datos
     if (descripcion === "" || precio === "" || cantidad === "") {
         alert("Los campos Descripcion, Cantidad y Precio deben estan llenados");
         return;
     }
-
-    //obtener data de los select
-    let selectEspecie = document.getElementById("selectEspecie");
-    //data para insertar a la tabla
-    let dataTableEspecie = (selectEspecie.options[selectEspecie.selectedIndex].value == "1" ? "" : selectEspecie.options[selectEspecie.selectedIndex].text);
+    //!!!cambiar los getElementId por Query selector data-
     
-    let dataEspecie = selectEspecie.value;
-
-    let selectRubro = document.getElementById("selectRubro");
+    //obtener data de los select
+    const selectEspecie = document.getElementById("selectEspecie");
     //data para insertar a la tabla
-    let dataTableRubro = (selectRubro.options[selectRubro.selectedIndex].value == "1" ? "" :  selectRubro.options[selectRubro.selectedIndex].text);
+    
+    const dataTableEspecie = (selectEspecie.options[selectEspecie.selectedIndex].value == "*" ? "" : selectEspecie.options[selectEspecie.selectedIndex].text);
     //data para insertar en clase ui
-    let dataRubro = selectRubro.value;
-
-    let selectUbicacion = document.getElementById("selectUbicacion");
+    const dataEspecie = (selectEspecie.options[selectEspecie.selectedIndex].value == "*" ? null : selectEspecie.options[selectEspecie.selectedIndex].value);;
+    
+    const selectRubro = document.getElementById("selectRubro");
     //data para insertar a la tabla
-    let dataTableUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].value == "1" ? "" : selectUbicacion.options[selectUbicacion.selectedIndex].text);
+    const dataTableRubro = (selectRubro.options[selectRubro.selectedIndex].value == "*" ? "" :  selectRubro.options[selectRubro.selectedIndex].text);
     //data para insertar en clase ui
-    let dataUbicacion = selectUbicacion.value;
-
-    let selectPersona = document.getElementById("selectPersona");
+    const dataRubro = (selectRubro.options[selectRubro.selectedIndex].value == "*" ? null :  selectRubro.options[selectRubro.selectedIndex].value);;
+    
+    const selectUbicacion = document.getElementById("selectUbicacion");
     //data para insertar a la tabla
-    let dataTablePersona = (selectPersona.options[selectPersona.selectedIndex].value == "-" ? "" : selectPersona.options[selectPersona.selectedIndex].text);
+    const dataTableUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].value == "*" ? "" : selectUbicacion.options[selectUbicacion.selectedIndex].text);
     //data para insertar en clase ui
-    let dataPersona = selectPersona.value;
-
-
+    const dataUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].value == "*" ? null : selectUbicacion.options[selectUbicacion.selectedIndex].value);
+    
+    const selectPersona = document.getElementById("selectPersona");
+    //data para insertar a la tabla
+    const dataTablePersona = (selectPersona.options[selectPersona.selectedIndex].value == "*" ? "" : selectPersona.options[selectPersona.selectedIndex].text);
+    //data para insertar en clase ui
+    const dataPersona = (selectPersona.options[selectPersona.selectedIndex].value == "*" ? null : selectPersona.options[selectPersona.selectedIndex].value);
+    
+    
     //insertar datos a la tabla
+    
     const tabla = document.getElementById('table');
     const newRow = tabla.insertRow(-1);
-
+    
     let cell = newRow.insertCell(0);
     cell.innerHTML = '<strong>' + descripcion + '</strong>';
-
+    
     cell = newRow.insertCell(1);
     cell.textContent = precio;
-
+    
     cell = newRow.insertCell(2);
     cell.textContent = cantidad;
-
-
+    
+    
     cell = newRow.insertCell(3);
     cell.textContent = dataTableEspecie;
-
+    
     cell = newRow.insertCell(4);
     cell.textContent = dataTableRubro;
-
+    
     cell = newRow.insertCell(5);
     cell.textContent = dataTableUbicacion;
-
+    
     cell = newRow.insertCell(6);
     cell.textContent = dataTablePersona;
-
+    
     cell = newRow.insertCell(7);
     cell.textContent = observacion;
-
-
-
-    let index = ui.agregarProducto(new producto(false, descripcion, precio, cantidad, observacion, dataEspecie, dataRubro, dataUbicacion, dataPersona));
-
+    
+    const fecha = (new Date()).getTime();
+    
+    
+    let index = ui.agregarProducto(new producto(descripcion, precio, cantidad, observacion, dataEspecie, dataRubro, dataUbicacion, dataPersona, fecha));
+    
     cell = newRow.insertCell(8);
     cell.innerHTML = '<button class="btn btn-danger p-0"> X </button>'
-    cell.addEventListener('click', (event) => {
+
+    cell.lastElementChild.addEventListener('click', (event) => {
         deleteRow(event.path, index);
-    })
+    });
 }
 
-//añadir accion al formulario, al momento de hacer click agregará una fila a la tabla
-form.addEventListener('submit', function (event) {
-    event.preventDefault();
-    guardarProdcutos();
+//Eliminar de la tabla la fila selecionada y quitarla del registro de ui
+function deleteRow(path, index) {
 
-});
+    ui.borrarProducto(index);
+    
+    //path[0]=button, path[1]=td, path[2]=tr, path[3]=th 
+    //elimino el tr de la tabla
+    path[3].removeChild(path[2]);
+}
 
 //enviar datos
-
 const button = document.getElementById("enviar");
-
-const mostrarListadoAgregado = (idsFromServer) => {
-    const table = document.getElementById('table');
-    
-    //remover formulario
-    document.getElementById('div-formulario').parentNode.removeChild(document.getElementById('div-formulario'));
-    
-    //clase para que la tabla este al centro
-    document.getElementById('div-tabla').setAttribute("class", "row col-md-12");
-    
-    const rows = table.rows;
-    rows[0].cells[8].textContent = "Ids";
-
-    for (let i=1; i<rows.length; i++){
-        rows[i].cells[8].textContent = idsFromServer[i-1];
-        
-    }
-
-    let divEnviar = document.getElementById("div-enviar");
-    
-    divEnviar.innerHTML = '<a href="/addProduct" class="btn btn-success">Volver</a>'
-
-}
-
 
 button.addEventListener('click', async () => {
     const productos = ui.getProductos();
@@ -202,6 +186,7 @@ button.addEventListener('click', async () => {
     if (productos.length > 0) {
         let url = '/addProduct';
         let data = { productos };
+        console.log(data)
 
 
         const res = await fetch(url, {
@@ -220,3 +205,32 @@ button.addEventListener('click', async () => {
         alert("No hay productos en la tabla")
     }
 });
+
+const mostrarListadoAgregado = (idsFromServer) => {
+    //idsFromServer string con rangos que manda el servidor
+
+    const table = document.getElementById('table');
+    
+    //remover formulario
+    document.getElementById('div-formulario').parentNode.removeChild(document.getElementById('div-formulario'));
+    
+    //clase para que la tabla este al centro
+    document.getElementById('div-tabla').setAttribute("class", "row col-md-12");
+    
+    const rows = table.rows;
+
+    //agrego la columna id
+    rows[0].cells[8].textContent = "Ids";
+
+    for (let i=1; i<rows.length; i++){
+        //itero por las columnas para pintar los rangos de cantidades
+        rows[i].cells[8].textContent = idsFromServer[i-1];
+        
+    }
+
+    let divEnviar = document.getElementById("div-enviar");
+    
+    divEnviar.innerHTML = '<a href="/addProduct" class="btn btn-success">Volver</a>'
+
+}
+
