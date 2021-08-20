@@ -68,7 +68,6 @@ const rederizarFilasDeCategorias = (data, tipo) => {
                 return
             }
 
-            console.log(data);
             renderizarTablaProductos(data, tipo)
 
 

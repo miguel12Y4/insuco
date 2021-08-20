@@ -196,8 +196,12 @@ button.addEventListener('click', async () => {
                 'Content-Type': 'application/json'
             }
         });
-        const {ids} = await res.json();
-        mostrarListadoAgregado(ids);
+        const resId = await res.json();
+        if(resId.error){
+            alert(resId.error);
+            return
+        }
+        mostrarListadoAgregado(resId.ids);
 
 
 

@@ -4,12 +4,13 @@ const router = express.Router();
 
 const pool = require('../database');
 
-
 //Obtener datos de todas las ubicaciones
 router.get('/getUbicacion', (req, res)=>{
     pool.query('SELECT * FROM UBICACION', (error, results) => {
-        if (error) throw error;
-        let data = { key : [], text : []};
+        let data = { key : [], text : [], error :''};
+        if (error) {
+            data.error = 'Se produjo un error';
+        };
         results.forEach(element => {
             data.key.push(element.ID);
             data.text.push(element.NOMBRE);
@@ -18,10 +19,14 @@ router.get('/getUbicacion', (req, res)=>{
     });
 });
 
+
+
 //Obtener datos de todas las Personas
 router.get('/getPersona', (req, res)=>{
     pool.query('SELECT * FROM ENCARGADO', (error, results) => {
-        if (error) throw error;
+        if (error) {
+            data.error = 'Se produjo un error';
+        };
         let data = { key : [], text : []};
         results.forEach(element => {
             data.key.push(element.RUT);
@@ -34,7 +39,9 @@ router.get('/getPersona', (req, res)=>{
 //Obtener datos de todoss los rubros
 router.get('/getRubro', (req, res)=>{
     pool.query('SELECT * FROM RUBRO', (error, results) => {
-        if (error) throw error;
+        if (error) {
+            data.error = 'Se produjo un error';
+        };
         let data = { key : [], text : []};
         results.forEach(element => {
             data.key.push(element.ID);
@@ -47,7 +54,9 @@ router.get('/getRubro', (req, res)=>{
 //Obtener datos de todas las Especies
 router.get('/getEspecie', (req, res)=>{
     pool.query('SELECT * FROM ESPECIE', (error, results) => {
-        if (error) throw error;
+        if (error) {
+            data.error = 'Se produjo un error';
+        };
         let data = { key : [], text : []};
         results.forEach(element => {
             data.key.push(element.ID);
@@ -58,17 +67,15 @@ router.get('/getEspecie', (req, res)=>{
     });
 });
 
-router.get('/search', (req, res)=>{
-    res.render('search', {title : "Buscar Productos"});
-});
 
+//muesta los productos de cada categoria dado los datos de su instancia de categoria y categoria(ej: D instancia de Rubro, Miguel de encargado, etc)
 router.get('/getProductos', (req, res) =>{
     //agregar try y catch
 
 
     const id = req.query.id;
     const tipo = req.query.tipo;
-    console.log(id, tipo)
+
 
     let consulta = '';
 
@@ -93,11 +100,57 @@ router.get('/getProductos', (req, res) =>{
     }
 
     pool.query(consulta,[id], (error, results) => {
-        if (error) throw error;
+        if (error) {
+            console.log('se produjo un error 104');
+        };
         res.send(results);
     });
 }); 
 
+router.get('/getProductosPorId', (req, res) =>{
+    
+    const tipo = req.query.tipo;
+
+
+    //Más adelante podria crear un procdemiento en la BD para esta consulta ya que es mas compleja
+    if(tipo==='2'){
+        if(req.query.idMin && req.query.idMax){
+            const consulta = 'SELECT P.ID, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE  P.ID >= ? AND P.ID <= ? ORDER BY P.ID;';
+    
+            pool.query(consulta,[parseInt(req.query.idMin), parseInt(req.query.idMax)], (error, results) => {
+                if (error) {
+                    console.log('se produjo un error 122');
+                };
+                res.send(results);
+            });
+        }
+    }else if(tipo==='1'){
+        if(req.query.id){
+            const consulta = 'SELECT P.ID, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE  P.ID = ? ORDER BY P.ID;';
+            const id = req.query.id;
+            pool.query(consulta,[req.query.id], (error, results) => {
+                if (error) {
+                    console.log('se produjo un error 134');
+                };
+                res.send(results);
+            });
+        }
+    }   
+    
+    
+}); 
+
+
+
+
+
+router.get('/search', (req, res)=>{
+    res.render('search', {title : "Buscar Productos"});
+});
+
+router.get('/searchId', (req, res)=>{
+    res.render('searchId', {title : "Buscar Productos por Número"});
+});
 
 
 module.exports = router;

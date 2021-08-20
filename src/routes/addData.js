@@ -11,7 +11,6 @@ router.get('/addProduct', (req, res) => {
 
 router.post('/addProduct', (req, res) => {
     const { productos } = req.body;
-    console.log(productos)
 
     const productosIndividuales = [];
 
@@ -38,7 +37,10 @@ router.post('/addProduct', (req, res) => {
     let id = [];
 
     pool.query('INSERT INTO PRODUCTO(DESCRIPCION, PRECIO, OBSERVACION, ID_ESPECIE, ID_RUBRO, ID_UBICACION, RUT_ENCARGADO, FECHA) VALUES ?', [productosIndividuales], (error, results) => {
-        if (error) throw error;
+        if (error) if (error){
+            res.send({error:'Hay un error, reintentelo más tarde'}); 
+            return 
+        };
     
         let top = results.insertId;
         
@@ -56,19 +58,6 @@ router.post('/addProduct', (req, res) => {
 });
 
 
-//Agregar Especie
-router.get('/addEspecie', (req, res) => {
-    res.render('addEspecie', {title : "Agregar Especie"});
-});
-
-router.post('/addEspecie', (req, res) => {
-    const data = req.body;
-    pool.query('INSERT INTO ESPECIE(NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
-        if (error) throw error;
-        res.send('Especie agregada');
-    });
-});
-
 
 
 //Agregar Persona
@@ -80,11 +69,33 @@ router.post('/addPersona', (req, res) => {
     const data = req.body;
     const datos = [data.rut, data.nombre]
     pool.query('INSERT INTO ENCARGADO(RUT, NOMBRE) VALUES (?);', [datos], (error, results) => {
-        if (error) throw error;
-        res.send('Persona agregada');
+        let status = 'Persona agregada'
+        if (error){
+            if(error.code==='ER_DUP_ENTRY'){
+                status = 'Rut ingresado ya esta en el sistema';
+            }
+            status = 'Hay un error, reintentelo más tarde'; 
+        }
+        res.send(status);
     });
+    
+});    
+
+//Agregar Especie
+router.get('/addEspecie', (req, res) => {
+    res.render('addEspecie', {title : "Agregar Especie"});
 });
 
+router.post('/addEspecie', (req, res) => {
+    const data = req.body;
+    pool.query('INSERT INTO ESPECIE(NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
+        let status = 'Especie agregada';
+        if (error){
+            status = 'Hay un error, reintentelo más tarde'; 
+        }
+        res.send(status);
+    });
+});
 
 
 //Agregar Rubro
@@ -94,8 +105,11 @@ router.get('/addRubro', (req, res) => {
 router.post('/addRubro', (req, res) => {
     const data = req.body;
     pool.query('INSERT INTO RUBRO (NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
-        if (error) throw error;
-        res.send('Rubro agregado');
+        let status = 'Rubro agregada';
+        if (error){
+            status = 'Hay un error, reintentelo más tarde'; 
+        }
+        res.send(status);
     });
 });
 
@@ -107,8 +121,11 @@ router.get('/addUbicacion', (req, res) => {
 router.post('/addUbicacion', (req, res) => {
     const data = req.body;
     pool.query('INSERT INTO UBICACION(NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
-        if (error) throw error;
-        res.send('Ubicacion agregada');
+        let status = 'Ubicación agregada';
+        if (error){
+            status = 'Hay un error, reintentelo más tarde'; 
+        }
+        res.send(status);
     });
 });
 
