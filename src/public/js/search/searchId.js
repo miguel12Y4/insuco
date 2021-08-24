@@ -3,7 +3,6 @@ const button = document.getElementById('Buscar');
 const select = document.getElementById("selectBusqueda");
 
 select.addEventListener('change', (event)=>{
-    console.log(event.target.value)
     const div = document.getElementById('campos')
 
     if(event.target.value==='2'){
@@ -70,34 +69,95 @@ button.addEventListener('click', async (e) => {
 
     let params = '';
     if(valor==='1'){
-        console.log(data);
         params = new URLSearchParams({tipo: data.tipo, id : data.id })
     }else{
         params = new URLSearchParams({tipo: data.tipo, idMin : data.idMin, idMax: data.idMax});
     }
     //pedir productos de la categoria pasada por parametros
-    console.log("parasm", params.toString())
     const response = await fetch('/getProductosPorId/?'+ params.toString());
     const productos =  await response.json();
 
     
     class Table{
-        
-        static getTable(datos){
-            const keys = Object.keys(datos[0]);
-            const TableStyle = 'd-flex justify-content-center table table-responsive text-center table-bordered'
-            const TheadStyle = 'thead-dark'
+        // obtiene y agrega botones al div "pagina" que rendericen 10 rows por cada boton
+        static getBotones(data){
 
-            
-            return(`<table class='${TableStyle}'><thead class='${TheadStyle}' ><tr>${keys.map(e => `<th>${e}</th>`).join('')} </tr>${addRow(datos)}</thead></table>`)
+            //crear un string con el codigo HTML de una tabla cuyo array esta pasado por parametros
+            const getTable = (datos)=>{
+                let keys;
+                try {
+                    keys = Object.keys(datos[0]);
+                } catch (error) {
+                    alert('No hay productos con ese Número');
+                    return '';
+                }
+                const TableStyle = 'd-flex justify-content-center table table-responsive text-center table-bordered';
+                const TheadStyle = 'thead-dark';
+                
+                return(`<table class='${TableStyle}'><thead class='${TheadStyle}' ><tr>${keys.map(e => `<th>${e}</th>`).join('')} </tr>${addRow(datos)}</thead></table>`);
+            }
+    
+            //string con las filas de cada producto
+            const addRow  = (data)=>{
+                return data.map( rowDic =>`<tr>${Object.values(rowDic).map( dataRow => `<td>${dataRow}</td>`).join('')}</tr>`).join('');
+            };
+    
+
+            //creo elementos button y que modifican en div "tabla" para que al pulsar el boton i muestra 10 rows 
+            const tablePaginada = (data) =>{
+                let number = parseInt( data.length / 10);
+                number+= data.length % 10 >0?1:0;
+                let botones = []
+                
+                const divTabla = document.createElement('div');
+                
+                for (let i = 0; i < number; i++) {
+                    let rows = [];
+                    let btn = document.createElement('button');
+                    btn.textContent = i+1;
+                    for (let j = i*10; j < i*10 + 10 && j<data.length; j++) {
+                        rows.push(data[j]);
+                    }
+                    btn.addEventListener('click', ()=>{
+                        divTabla.innerHTML = getTable(rows);
+                    })
+                    if(i===0){
+                        divTabla.innerHTML = getTable(rows);
+                    }
+                    botones.push(btn);
+                }
+                const divPadre = document.createElement('div');
+                const divBotones = document.createElement('div');
+                            
+                botones.forEach(element => {
+                    divBotones.appendChild(element);
+                });
+
+                divBotones.classList.add('text-center');
+                divPadre.appendChild(divBotones);
+                divPadre.appendChild(divTabla);
+                return divPadre;
+            }
+
+            return tablePaginada(data)
+
+
         }
-        static addRow(data) {
-            return data.map( rowDic =>`<tr>${Object.values(rowDic).map( dataRow => `<td>${dataRow}</td>`).join('')}</tr>`).join('');
-        }
+
+    }
+
+    const t = document.querySelector('#tabla');
+
+    if(productos.length === 0){
+        alert('no se encontraron productos')
+        return
     }
     
-    const div = document.getElementById('tabla');
-    div.innerHTML = Table.getTable(productos);
+    const tabla = Table.getBotones(productos)
+    t.innerHTML = '';
+    
+    t.appendChild(tabla);
+    
     
     
 });

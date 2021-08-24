@@ -224,7 +224,7 @@ const mostrarListadoAgregado = (idsFromServer) => {
     const rows = table.rows;
 
     //agrego la columna id
-    rows[0].cells[8].textContent = "Ids";
+    rows[0].cells[8].textContent = "Números de id";
 
     for (let i=1; i<rows.length; i++){
         //itero por las columnas para pintar los rangos de cantidades
