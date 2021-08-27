@@ -105,7 +105,7 @@ router.get('/addRubro', (req, res) => {
 router.post('/addRubro', (req, res) => {
     const data = req.body;
     pool.query('INSERT INTO RUBRO (NOMBRE) VALUES (?);', [data.nombre], (error, results) => {
-        let status = 'Rubro agregada';
+        let status = 'Rubro agregado';
         if (error){
             status = 'Hay un error, reintentelo más tarde'; 
         }

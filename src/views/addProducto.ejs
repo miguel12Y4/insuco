@@ -12,8 +12,7 @@
 <body>
     <%- include ('partials/nav') -%>
     
-    <div class="">
-        <div id="App" class="row mx-2 py-4">
+        <div id="App" class="row justify-content-center py-4">
             <div class="col-md-3" id ="div-formulario">
                 <div class="card">
                     <div class="card-header">
@@ -65,35 +64,36 @@
                     </div>
 
                     
+            </div>
+            <div class="col-md-8" id= "div-tabla">
+                <div class="container">
+                    <table id="table" class="table table-responsive text-center table-bordered table-hover">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Especie</th>
+                            <th scope="col">Rubro</th>
+                            <th scope="col">Ubicacion</th>
+                            <th scope="col">Encargado</th>
+                            <th scope="col">Observación</th>
+                            <th scope="col">Borrar</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbody">
+    
+                        </tbody>
+                      </table>
+                      <div class="container text-center" id="div-enviar">
+                          <button id="enviar" class="btn btn-success">Enviar</button>
+    
+                      </div>
+
                 </div>
-            <div class="row col-md-8" id= "div-tabla">
-                <table id="table" class="row d-flex justify-content-center table table-responsive text-center table-bordered">
-                    <thead class="thead-dark">
-                      <tr>
-                        <th scope="col">Descripción</th>
-                        <th scope="col">Precio</th>
-                        <th scope="col">Cantidad</th>
-                        <th scope="col">Especie</th>
-                        <th scope="col">Rubro</th>
-                        <th scope="col">Ubicacion</th>
-                        <th scope="col">Encargado</th>
-                        <th scope="col">Observación</th>
-                        <th scope="col">Borrar</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                  </table>
-                  <div class="container text-center" id="div-enviar">
-                      <button id="enviar" class="btn btn-success">Enviar</button>
-
-                  </div>
             </div>
                 
         </div>
-        
-    </div>
 
 
 

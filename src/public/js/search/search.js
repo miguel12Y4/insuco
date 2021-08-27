@@ -33,7 +33,8 @@ button.addEventListener('click', async (e) => {
 const rederizarFilasDeCategorias = (data, tipo) => {
 
     const div = document.getElementById('tabla');
-    div.innerHTML = `<table id="table" class="row d-flex justify-content-center table table-responsive text-center table-bordered">
+    div.classList.remove('container')
+    div.innerHTML = `<table id="table" class="table table-responsive text-center table-bordered m-4">
             <thead id="thead" class="thead-dark">
                 <tr>
                     <th scope="col">${(tipo==="Persona")? "RUT":"id"}</th>
@@ -74,7 +75,8 @@ const rederizarFilasDeCategorias = (data, tipo) => {
         }
         const renderizarTablaProductos = (data, tipo)=>{
             const div = document.getElementById('tabla');
-            div.innerHTML = `<table id="table" class="row d-flex justify-content-center table table-responsive text-center table-bordered">
+            div.classList.add('container')
+            div.innerHTML = `<table id="table" class="row justify-content-center table table-responsive text-center table-bordered p-4">
                 <thead id="thead" class="thead-dark">
                     <tr>
                         <th scope="col">Números</th>

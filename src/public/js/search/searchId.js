@@ -91,15 +91,15 @@ button.addEventListener('click', async (e) => {
                     alert('No hay productos con ese Número');
                     return '';
                 }
-                const TableStyle = 'd-flex justify-content-center table table-responsive text-center table-bordered';
+                const TableStyle = 'table table-responsive text-center table-bordered table-hover';
                 const TheadStyle = 'thead-dark';
                 
-                return(`<table class='${TableStyle}'><thead class='${TheadStyle}' ><tr>${keys.map(e => `<th>${e}</th>`).join('')} </tr>${addRow(datos)}</thead></table>`);
+                return(`<table class='${TableStyle}'><thead class='${TheadStyle}' ><tr>${keys.map(e => `<th>${e}</th>`).join('')} </tr></thead><tbody>${addRow(datos)}</tbody></table>`);
             }
     
             //string con las filas de cada producto
             const addRow  = (data)=>{
-                return data.map( rowDic =>`<tr>${Object.values(rowDic).map( dataRow => `<td>${dataRow}</td>`).join('')}</tr>`).join('');
+                return data.map( rowDic =>`<tr>${Object.values(rowDic).map( dataRow => `<td>${(dataRow === null)?"":dataRow}</td>`).join('')}</tr>`).join('');
             };
     
 
@@ -134,6 +134,7 @@ button.addEventListener('click', async (e) => {
                 });
 
                 divBotones.classList.add('text-center');
+                divTabla.classList.add('container');
                 divPadre.appendChild(divBotones);
                 divPadre.appendChild(divTabla);
                 return divPadre;
@@ -154,8 +155,9 @@ button.addEventListener('click', async (e) => {
     }
     
     const tabla = Table.getBotones(productos)
+    //'borro' de productos de la tabla (si es que habia antes)
     t.innerHTML = '';
-    
+    //agrego los productos que corresponden a la tabla
     t.appendChild(tabla);
     
     

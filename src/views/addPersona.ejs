@@ -9,24 +9,28 @@
 </head>
 <body>
     <%- include ('partials/nav') -%>
-    <div class="card px-4">
-        <div class="card-header">
-            <h4 class="text-center">Añadir Persona</h4>
+    <div class="row justify-content-center">
+
+        <div class="card px-4">
+            <div class="card-header">
+                <h4 class="text-center">Añadir Persona</h4>
+            </div>
+    
+            <form action="/addPersona" method="post" class="card-body mx-4">
+                <div class="form-group">
+                    <label for="Nombre" >Nombre:</label>
+                    <input type="text" id="Nombre" placeholder="Nombre" class="form-control" autocomplete="off" autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="rut" >RUT:</label>
+                    <input type="text" id="rut" placeholder="RUT" class="form-control" autocomplete="off">
+                </div>
+                <div class="container text-center">
+                        <input id="enviar" type="submit" value="Agregar" class="btn btn-primary">
+                </div>
+            </form>
         </div>
 
-        <form action="/addPersona" method="post" class="card-body mx-4">
-            <div class="form-group">
-                <label for="Nombre" >Nombre:</label>
-                <input type="text" id="Nombre" placeholder="Nombre" class="form-control" autocomplete="off" autofocus>
-            </div>
-            <div class="form-group">
-                <label for="rut" >RUT:</label>
-                <input type="text" id="rut" placeholder="RUT" class="form-control" autocomplete="off">
-            </div>
-            <div class="container text-center">
-                    <input id="enviar" type="submit" value="Agregar" class="btn btn-primary">
-            </div>
-        </form>
     </div>
     <!-- FOOTER -->
     <%- include ('partials/footer') -%>

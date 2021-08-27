@@ -5,6 +5,8 @@ const llenarFormulario = ()=>{
     addDataToFormulaio('Rubro');
     addDataToFormulaio('Especie'); 
 }
+
+//añado data a los select del formulario de agregar productos
 const addDataToFormulaio = async (tipo) =>{
     const select = document.getElementById("select"+tipo);
 
@@ -126,17 +128,18 @@ const guardarProdcutos = () => {
     
     //insertar datos a la tabla
     
-    const tabla = document.getElementById('table');
+    const tabla = document.getElementById('tbody');
     const newRow = tabla.insertRow(-1);
     
     let cell = newRow.insertCell(0);
     cell.innerHTML = '<strong>' + descripcion + '</strong>';
     
     cell = newRow.insertCell(1);
-    cell.textContent = precio;
+    cell.textContent = cantidad;
     
     cell = newRow.insertCell(2);
-    cell.textContent = cantidad;
+    cell.textContent = precio;
+    
     
     
     cell = newRow.insertCell(3);
@@ -180,6 +183,7 @@ function deleteRow(path, index) {
 //enviar datos
 const button = document.getElementById("enviar");
 
+//accion boton enviar productos al back
 button.addEventListener('click', async () => {
     const productos = ui.getProductos();
 

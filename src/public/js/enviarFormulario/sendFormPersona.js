@@ -4,8 +4,13 @@ const button = document.getElementById('enviar');
 button.addEventListener('click', async (e)=>{
     e.preventDefault();
     
-    let nombre = document.getElementById("Nombre").value;
-    let rut = document.getElementById("rut").value;
+    const nombre = document.getElementById("Nombre").value;
+    const rut = document.getElementById("rut").value;
+
+    if(nombre==='' || rut===''){
+        alert('Ingrese información antes de agregar');
+        return;
+    }
     const data = {nombre, rut};
 
     const res = await fetch('/addPersona', {

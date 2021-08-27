@@ -4,8 +4,14 @@ const button = document.getElementById('enviar');
 button.addEventListener('click', async (e)=>{
     e.preventDefault();
     
-    let nombre = document.getElementById("Nombre").value;
+    const nombre = document.getElementById("Nombre").value;
+    
+    if(nombre===''){
+        alert('Ingrese información antes de agregar');
+        return;
+    }
     const data = {nombre};
+
 
     const res = await fetch('/addRubro', {
         method: 'POST',
