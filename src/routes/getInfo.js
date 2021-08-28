@@ -1,3 +1,5 @@
+//rutas para mostrar los datos
+
 const express = require('express');
 
 const router = express.Router();
@@ -79,26 +81,29 @@ router.get('/getProductos', (req, res) =>{
 
     let consulta = '';
 
-    //Más adelante podria crear un procdemiento en la BD para esta consulta ya que es mas compleja
+    //Más adelante se podria crear un procdemiento en la BD para esta consulta ya que es mas compleja
     if(tipo==="Persona"){
-        consulta = 'SELECT P.FECHA, COUNT(P.FECHA) AS CANTIDAD, MAX(P.ID) AS MAX, MIN(P.ID) AS MIN, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE  EN.RUT = ? GROUP BY FECHA;';
+        consulta = 'SELECT P.FECHA, COUNT(P.FECHA) AS CANTIDAD, MAX(P.ID) AS MAX, MIN(P.ID) AS MIN, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE  EN.RUT = ? GROUP BY FECHA, P.RUT_ENCARGADO, ID_UBICACION;';
     
     }else if(tipo==="Especie"){
-        consulta = 'SELECT P.FECHA, COUNT(P.FECHA) AS CANTIDAD, MAX(P.ID) AS MAX, MIN(P.ID) AS MIN, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE E.ID = ? GROUP BY FECHA;';
+        consulta = 'SELECT P.FECHA, COUNT(P.FECHA) AS CANTIDAD, MAX(P.ID) AS MAX, MIN(P.ID) AS MIN, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE E.ID = ? GROUP BY FECHA, P.RUT_ENCARGADO, ID_UBICACION;';
     
     }else if(tipo==="Rubro"){
-        consulta = 'SELECT P.FECHA, COUNT(P.FECHA) AS CANTIDAD, MAX(P.ID) AS MAX, MIN(P.ID) AS MIN, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE R.ID = ? GROUP BY FECHA;';
+        consulta = 'SELECT P.FECHA, COUNT(P.FECHA) AS CANTIDAD, MAX(P.ID) AS MAX, MIN(P.ID) AS MIN, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE R.ID = ? GROUP BY FECHA, P.RUT_ENCARGADO, ID_UBICACION;';
     
     }else if(tipo==="Ubicacion"){
         consulta = 'SELECT P.FECHA, COUNT(P.FECHA) AS CANTIDAD, MAX(P.ID) AS MAX, MIN(P.ID) AS MIN, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE U.ID = ? GROUP BY FECHA;';
     
     }
 
+    //validar datos
+
     if(id===undefined || consulta==='' || tipo===undefined){
         res.send({error : "Problema con los datos tipo y id"});
         return
     }
 
+    //ejecutar consulta
     pool.query(consulta,[id], (error, results) => {
         if (error) {
             console.log('se produjo un error 104');
@@ -107,23 +112,30 @@ router.get('/getProductos', (req, res) =>{
     });
 }); 
 
+
+//obtener productos dado su numero o rango de numeros 
 router.get('/getProductosPorId', (req, res) =>{
     
     const tipo = req.query.tipo;
 
 
     //Más adelante podria crear un procdemiento en la BD para esta consulta ya que es mas compleja
+    //consulta para busqueda por rango
     if(tipo==='2'){
         if(req.query.idMin && req.query.idMax){
-            const consulta = 'SELECT P.ID, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE  P.ID >= ? AND P.ID <= ? ORDER BY P.ID;';
+            const consulta = 'SELECT P.FECHA, E.NOMBRE as ESPECIE,  P.DESCRIPCION,  MIN(P.ID) AS ID_MIN, MAX(P.ID) AS ID_MAX, COUNT(P.FECHA) AS CANTIDAD, P.PRECIO, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE  P.ID >= ? AND P.ID <= ? GROUP BY FECHA, P.RUT_ENCARGADO, ID_UBICACION;';
     
             pool.query(consulta,[parseInt(req.query.idMin), parseInt(req.query.idMax)], (error, results) => {
                 if (error) {
+
                     console.log('se produjo un error 122');
                 };
+
                 res.send(results);
             });
         }
+
+        //consulta para busqueda por numero especifico
     }else if(tipo==='1'){
         if(req.query.id){
             const consulta = 'SELECT P.ID, P.DESCRIPCION, P.PRECIO, E.NOMBRE as ESPECIE, U.NOMBRE AS UBICACION, R.NOMBRE as RUBRO, EN.NOMBRE as ENCARGADO FROM PRODUCTO as P LEFT OUTER JOIN UBICACION as U ON P.ID_UBICACION=U.ID LEFT OUTER JOIN ESPECIE as E ON P.ID_ESPECIE=E.ID LEFT OUTER JOIN RUBRO as R ON P.ID_RUBRO=R.ID LEFT OUTER JOIN ENCARGADO as EN ON P.RUT_ENCARGADO=EN.RUT WHERE  P.ID = ? ORDER BY P.ID;';
@@ -143,13 +155,13 @@ router.get('/getProductosPorId', (req, res) =>{
 
 
 
-
+//
 router.get('/search', (req, res)=>{
-    res.render('search', {title : "Buscar Productos"});
+    res.render('search');
 });
 
 router.get('/searchId', (req, res)=>{
-    res.render('searchId', {title : "Buscar Productos por Número"});
+    res.render('searchId');
 });
 
 

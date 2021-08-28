@@ -1,3 +1,5 @@
+//enviar formulario de agregar Rubro
+
 
 const button = document.getElementById('enviar');
 

@@ -1,14 +1,40 @@
+//inicialmente los select no tiene datos, se deben pedir a la base de datos
+
+//llenar datos de formularios
 const llenarFormulario = ()=>{
 
     addDataToFormulaio('Ubicacion');
     addDataToFormulaio('Persona');
     addDataToFormulaio('Rubro');
     addDataToFormulaio('Especie'); 
+
+    //agregar puntos de mil a los numeros de cantidad y precio
+    document.querySelector("#cantidad").addEventListener('keyup', (e)=>{
+        document.querySelector("#cantidad").parentNode.children[0].textContent='Cantidad: '+puntosMil(document.querySelector("#cantidad").value)
+    });
+
+    document.querySelector("#precio").addEventListener('keyup', (e)=>{
+        document.querySelector("#precio").parentNode.children[0].textContent='Precio: $'+puntosMil(document.querySelector("#precio").value)
+    });
+}
+
+//funcion para retornar cantidad numeria con puntos de mil
+const puntosMil = (cadena)=>{
+    let resultado = ""
+    console.log(cadena)
+    for (let i = 0; i<cadena.length; i++ ){
+        if(i%3==0 && i!=0){
+            resultado=cadena.charAt(cadena.length-1-i)+'.'+resultado;
+        }else{
+            resultado=cadena.charAt(cadena.length-1-i)+resultado;
+        }
+    }
+    return resultado;
 }
 
 //añado data a los select del formulario de agregar productos
 const addDataToFormulaio = async (tipo) =>{
-    const select = document.getElementById("select"+tipo);
+    const select = document.querySelector("#select"+tipo);
 
     const data = await peticion(tipo);
 
@@ -23,7 +49,7 @@ const addDataToFormulaio = async (tipo) =>{
     }
     
 };
-
+//peticion para obtener datos de cada categoria (tipo)
 const peticion = async (tipo) =>{
     const url = '/get'+tipo;
     const res = await fetch(url);
@@ -38,7 +64,7 @@ llenarFormulario();
 
 
 
-
+//objeto de los productos
 class producto {
     constructor(descripcion, precio, cantidad, observacion, especie, rubro, ubicacion, encargado, fecha) {
         this.descripcion = descripcion;
@@ -72,7 +98,10 @@ class UI {
 }
 
 
-const form = document.getElementById('product-form');
+//formulario de agregar producto
+const form = document.querySelector('#product-form');
+
+//instancia de UI
 var ui = new UI();
 
 
@@ -87,48 +116,50 @@ form.addEventListener('submit', function (event) {
 const guardarProdcutos = () => {
     
     //obtener y  validad información de formulario
-    const descripcion = document.getElementById("descripcion").value;
-    const precio = document.getElementById("precio").value;
-    const observacion = document.getElementById("observacion").value;
-    const cantidad = document.getElementById("cantidad").value;
-    
+    const descripcion = document.querySelector("#descripcion").value;
+    const precio = document.querySelector("#precio").value;
+    const observacion = document.querySelector("#observacion").value;
+    const cantidad = document.querySelector("#cantidad").value;
+    console.log(precio)
     //comprobar validez de los datos
     if (descripcion === "" || precio === "" || cantidad === "") {
         alert("Los campos Descripcion, Cantidad y Precio deben estan llenados");
         return;
     }
-    //!!!cambiar los getElementId por Query selector data-
-    
     //obtener data de los select
-    const selectEspecie = document.getElementById("selectEspecie");
+    const selectEspecie = document.querySelector("#selectEspecie");
     //data para insertar a la tabla
     
     const dataTableEspecie = (selectEspecie.options[selectEspecie.selectedIndex].value == "*" ? "" : selectEspecie.options[selectEspecie.selectedIndex].text);
     //data para insertar en clase ui
     const dataEspecie = (selectEspecie.options[selectEspecie.selectedIndex].value == "*" ? null : selectEspecie.options[selectEspecie.selectedIndex].value);;
     
-    const selectRubro = document.getElementById("selectRubro");
+    const selectRubro = document.querySelector("#selectRubro");
     //data para insertar a la tabla
     const dataTableRubro = (selectRubro.options[selectRubro.selectedIndex].value == "*" ? "" :  selectRubro.options[selectRubro.selectedIndex].text);
     //data para insertar en clase ui
     const dataRubro = (selectRubro.options[selectRubro.selectedIndex].value == "*" ? null :  selectRubro.options[selectRubro.selectedIndex].value);;
     
-    const selectUbicacion = document.getElementById("selectUbicacion");
+    const selectUbicacion = document.querySelector("#selectUbicacion");
     //data para insertar a la tabla
     const dataTableUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].value == "*" ? "" : selectUbicacion.options[selectUbicacion.selectedIndex].text);
     //data para insertar en clase ui
     const dataUbicacion = (selectUbicacion.options[selectUbicacion.selectedIndex].value == "*" ? null : selectUbicacion.options[selectUbicacion.selectedIndex].value);
     
-    const selectPersona = document.getElementById("selectPersona");
+    const selectPersona = document.querySelector("#selectPersona");
     //data para insertar a la tabla
     const dataTablePersona = (selectPersona.options[selectPersona.selectedIndex].value == "*" ? "" : selectPersona.options[selectPersona.selectedIndex].text);
     //data para insertar en clase ui
     const dataPersona = (selectPersona.options[selectPersona.selectedIndex].value == "*" ? null : selectPersona.options[selectPersona.selectedIndex].value);
     
+    //los valores no deben ser nulos
+    if(dataPersona===null || dataUbicacion===null || dataEspecie===null || dataRubro===null){
+        alert('se deben ingresar todos los datos de Especie, Rubro, Persona, Ubicacion');
+        return;
+    }
     
     //insertar datos a la tabla
-    
-    const tabla = document.getElementById('tbody');
+    const tabla = document.querySelector('#tbody');
     const newRow = tabla.insertRow(-1);
     
     let cell = newRow.insertCell(0);
@@ -138,7 +169,7 @@ const guardarProdcutos = () => {
     cell.textContent = cantidad;
     
     cell = newRow.insertCell(2);
-    cell.textContent = precio;
+    cell.textContent = puntosMil(precio);
     
     
     
@@ -163,7 +194,7 @@ const guardarProdcutos = () => {
     let index = ui.agregarProducto(new producto(descripcion, precio, cantidad, observacion, dataEspecie, dataRubro, dataUbicacion, dataPersona, fecha));
     
     cell = newRow.insertCell(8);
-    cell.innerHTML = '<button class="btn btn-danger p-0"> X </button>'
+    cell.innerHTML = '<button class="btn btn-danger p-0"> Borrar </button>'
 
     cell.lastElementChild.addEventListener('click', (event) => {
         deleteRow(event.path, index);
@@ -181,18 +212,17 @@ function deleteRow(path, index) {
 }
 
 //enviar datos
-const button = document.getElementById("enviar");
+const button = document.querySelector("#enviar");
 
-//accion boton enviar productos al back
+//accion boton enviar productos al backend
 button.addEventListener('click', async () => {
     const productos = ui.getProductos();
 
     if (productos.length > 0) {
-        let url = '/addProduct';
-        let data = { productos };
-        console.log(data)
+        const url = '/addProduct';
+        const data = { productos };
 
-
+        //enviar productos al backend para agregarlos a la base de datos
         const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(data),
@@ -217,13 +247,13 @@ button.addEventListener('click', async () => {
 const mostrarListadoAgregado = (idsFromServer) => {
     //idsFromServer string con rangos que manda el servidor
 
-    const table = document.getElementById('table');
+    const table = document.querySelector('#table');
     
     //remover formulario
-    document.getElementById('div-formulario').parentNode.removeChild(document.getElementById('div-formulario'));
+    document.querySelector('#div-formulario').parentNode.removeChild(document.querySelector('#div-formulario'));
     
     //clase para que la tabla este al centro
-    document.getElementById('div-tabla').setAttribute("class", "row col-md-12");
+    document.querySelector('#div-tabla').setAttribute("class", "row col-md-12");
     
     const rows = table.rows;
 
@@ -236,8 +266,8 @@ const mostrarListadoAgregado = (idsFromServer) => {
         
     }
 
-    let divEnviar = document.getElementById("div-enviar");
-    
+    let divEnviar = document.querySelector("#div-enviar");
+    //boton para volver al formulario de agregar producto
     divEnviar.innerHTML = '<a href="/addProduct" class="btn btn-success">Volver</a>'
 
 }

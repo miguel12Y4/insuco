@@ -1,3 +1,5 @@
+//rutas para añadir informacion
+
 const express = require('express');
 
 const router = express.Router();
@@ -15,7 +17,6 @@ router.post('/addProduct', (req, res) => {
     const productosIndividuales = [];
 
     //itero sobre todos los elementos para obtener todas las tuplas
-
     productos.forEach(element => {
         for (let i = 0; i < element.cantidad; i++) {
             productosIndividuales.push(
@@ -44,6 +45,7 @@ router.post('/addProduct', (req, res) => {
     
         let top = results.insertId;
         
+        //envio los id para que los muestre la tabla en el frontend (solo los calculé porque la base de datos solo retorna el id inicial o final (no recuerdo bien ahora))
         for(let i=0; i<productos.length; i++){
             
             let d = `${top} - ${top + parseInt(productos[i].cantidad - 1)}`;
@@ -130,6 +132,44 @@ router.post('/addUbicacion', (req, res) => {
 });
 
 
+//ruta para transferir productos de una persona a otra o una ubicacion a otra
+router.post('/transferencia', (req, res) => {
+    const datos = req.body;
+    let ids = [];
+
+    if(datos[0].tipo != "Persona" && datos[0].tipo != "Ubicacion"){
+        res.send({error: 'tipo de categoria es invalida'})
+    }
+
+    for (let j = 0; j < datos.length; j++) {
+        for (let i = 0; i < datos[j].cantidad; i++) {
+            ids.push(datos[j].id + i);
+        }
+    }
+    const idsACambiar = ids.map(e => '('+e+')').join('');
+
+    const idDestino = datos[0].idDestino;
+
+
+    if(datos[0].tipo === 'Persona'){
+        pool.query("UPDATE PRODUCTO SET RUT_ENCARGADO = ? WHERE ? LIKE  CONCAT('%(', ID , ')%');", [idDestino, idsACambiar], (error, results) => {
+            let status = 'Productos transferidos de encargado correctamente';
+            if (error){
+                status = 'Hay un error, reintentelo más tarde'; 
+            }
+            res.send(status);
+        });
+    }else{
+        pool.query("UPDATE PRODUCTO SET ID_UBICACION = ? WHERE ? LIKE  CONCAT('%(', ID , ')%');", [idDestino, idsACambiar], (error, results) => {
+            let status = 'Productos transferidos de ubicación correctamente';
+            if (error){
+                status = 'Hay un error, reintentelo más tarde';
+            }
+            res.send(status);
+        });
+    }
+
+});
 
 
 module.exports = router;

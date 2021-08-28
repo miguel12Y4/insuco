@@ -1,3 +1,5 @@
+//enviar formulario de agregar Persona
+
 
 const button = document.getElementById('enviar');
 

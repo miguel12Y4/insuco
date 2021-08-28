@@ -1,3 +1,5 @@
+//enviar formulario de agregar Ubicación
+
 
 const button = document.getElementById('enviar');
 
